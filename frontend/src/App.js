@@ -1,13 +1,27 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useEffect, useState } from 'react';
 
 function App() {
+  const [test, setTest] = useState('');
+
+  const callAPI = () => {
+    fetch('http://localhost:4000/test')
+      .then(res => res.text())
+      .then(res => setTest(res))
+      .catch(err => err);
+  }
+
+  useEffect(() => {
+    callAPI();
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          {test}
         </p>
         <a
           className="App-link"
