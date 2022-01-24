@@ -11,6 +11,16 @@ var testRouter = require('./routes/test');
 
 var app = express();
 
+//firebase admin setup - YOU NEED TO SETUP HERE
+var admin = require("firebase-admin");
+
+var serviceAccount = require("messenger-admin-key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://e2ee-messenger-8ac87-default-rtdb.firebaseio.com"
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
