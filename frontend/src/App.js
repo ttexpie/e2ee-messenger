@@ -1,10 +1,10 @@
-import './App.css';
 import React, { useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ChatView from './components/ChatView';
 import LoginForm from './components/LoginForm';
+import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCDF4Lu7dojtXfPUmMGZ0jnLq1sjd2hVg0",
@@ -38,16 +38,30 @@ function App() {
     console.log(test);
   }, []);
 
-  return (
+  const oldUI = (
     <div>
       <header>
         <h1>StudyFind Messenger</h1>
       </header>
 
-      <section className='over'>
+      <section>
         {user ? <ChatView /> : <LoginForm />}
       </section>
     </div>
+  );
+
+  return (
+    <ChakraProvider>
+      <Center>
+        <Heading>StudyFind Messenger</Heading>
+      </Center>
+      <Box
+        direction='column'
+        p={2}
+      >
+        {user ? <ChatView /> : <LoginForm />}
+      </Box>
+    </ChakraProvider>
   );
 }
 

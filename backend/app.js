@@ -14,7 +14,7 @@ var app = express();
 //firebase admin setup - YOU NEED TO SETUP HERE
 var admin = require("firebase-admin");
 
-var serviceAccount = require("messenger-admin-key.json");
+var serviceAccount = require("./messenger-admin-key.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
