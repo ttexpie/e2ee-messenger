@@ -11,30 +11,6 @@ function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const oldUI = (
-        <>
-            <form>
-                <input className='loginInfo'
-                    type='text'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder='Email' />
-            </form>
-            <form>
-                <input className='loginInfo'
-                    type='password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder='Password' />
-            </form>
-            <button className='loginButton'
-                onClick={() => emailLogin(email, password)}
-                disabled={!email || !password}>
-                Login
-            </button>
-        </>
-    )
-
     return (
         <Center>
             <VStack

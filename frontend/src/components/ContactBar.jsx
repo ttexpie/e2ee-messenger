@@ -1,24 +1,31 @@
-import { Center, Heading, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { Heading, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { getDatabase, onChildAdded, ref } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
+import { useEffect, useState } from "react";
 
 function ContactBar() {
-    const contacts = [
-        {
-        name: 'Kyle Mettille',
-        avatar: 'http://cdn.onlinewebfonts.com/svg/img_173956.png',
-        recent: 'how you are doing today?',
-        },
-        {
-            name: 'Levi Colston',
-            avatar: 'http://cdn.onlinewebfonts.com/svg/img_173956.png',
-            recent: 'ok, see you then',
-        }
-    ]
+    const auth = getAuth();
+    const database = getDatabase();
+    const [contactList, setContactList] = useState([]);
 
-    return contacts.map((contact, index) => {
+    const addContact = (k, n, r) => {
+        setContactList(contactList => [...contactList, {key: k, name: n, recent: r}]);
+    }
+
+    console.log('users/' + auth.currentUser.uid + '/contacts');
+    const contactListRef = ref(database, 'users/' + auth.currentUser.uid + '/contacts');
+
+    useEffect(() => {
+        onChildAdded(contactListRef, (data) => {
+            addContact(data.key, data.val(), 'recent message goes here')
+        });
+    }, []);
+
+    return contactList.map((contact, index) => {
         return (
-            <HStack align>
+            <HStack  key={contact.key} align>
                 <Image 
-                    src={contact.avatar} 
+                    src='http://cdn.onlinewebfonts.com/svg/img_173956.png' 
                     alt='avatar'
                     borderRadius='full'
                     boxSize='100px'

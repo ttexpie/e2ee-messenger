@@ -23,9 +23,10 @@ export const auth = getAuth(app);
 const url = 'http://localhost:4000/';
 
 function App() {
-  const [test, setTest] = useState('');
+  //const [test, setTest] = useState('');
   const [user] = useAuthState(auth);
 
+  /*
   const callAPI = () => {
     fetch(url + 'test')
       .then(res => res.text())
@@ -37,18 +38,7 @@ function App() {
     callAPI();
     console.log(test);
   }, []);
-
-  const oldUI = (
-    <div>
-      <header>
-        <h1>StudyFind Messenger</h1>
-      </header>
-
-      <section>
-        {user ? <ChatView /> : <LoginForm />}
-      </section>
-    </div>
-  );
+  */
 
   return (
     <ChakraProvider>
