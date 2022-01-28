@@ -1,15 +1,30 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { auth } from '../App';
-import { Button, Center, Input, VStack } from '@chakra-ui/react';
+import { Button, Center, Input, useToast, VStack } from '@chakra-ui/react';
 
 function LoginForm() {
-    const emailLogin = async (e, p) => {
-        await signInWithEmailAndPassword(auth, e, p);
-    };
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const auth = getAuth();
+    const toast = useToast();
+    const emailLogin = async (e, p) => {
+        await signInWithEmailAndPassword(auth, e, p)
+            .then((userCredential) => {
+                toast({
+                    title: 'Successfully logged in',
+                    status: 'success',
+                    isClosable: 'true',
+                });
+            })
+            .catch((error) => {
+                toast({
+                    title: 'Error! ' + error.code,
+                    status: 'error',
+                    isClosable: 'true',
+                });
+            });
+    };
 
     return (
         <Center>

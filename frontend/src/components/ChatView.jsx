@@ -1,40 +1,30 @@
-import { signOut } from 'firebase/auth';
-import { auth } from '../App';
-import { Box, Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, 
-    ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react';
+import { getAuth, signOut } from 'firebase/auth';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import ContactBar from './ContactBar';
 import React from 'react';
 
 function ChatView() {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const finalRef = React.useRef();
-
+    const auth = getAuth();
     return (
-        <Box w='25%' direction='column'>
-            <Text>Successfully logged in</Text>
-            <Button onClick={() => signOut(auth)}>Sign Out</Button>
-            <Button onClick={onOpen}>New Contact</Button>
-            <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>New Contact</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <FormControl>
-                            <FormLabel>Enter email for contact</FormLabel>
-                            <Input placeholder='Email' />
-                        </FormControl>
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <Button>
-                            Create
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-            <ContactBar />
-        </Box>
+        <Flex>
+            <Box
+                flex='1'
+                border='2px' 
+                borderRadius='2xl'
+                borderColor='gray.100'
+            >
+                <Button onClick={() => signOut(auth)}>Sign Out</Button>
+                <ContactBar />
+            </Box>
+            <Box 
+                flex='2'
+                border='2px'
+                borderRadius='2xl'
+                borderColor='gray.100'
+            >
+                <Text>Chat goes here</Text>
+            </Box>
+        </Flex>
     );
 }
 
