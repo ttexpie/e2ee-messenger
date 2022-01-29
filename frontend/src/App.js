@@ -42,13 +42,10 @@ function App() {
 
   return (
     <ChakraProvider>
-      <Center>
+      <Center h='5vh'>
         <Heading>StudyFind Messenger</Heading>
       </Center>
-      <Box
-        direction='column'
-        p={2}
-      >
+      <Box direction='column'>
         {user ? <ChatView /> : <LoginForm />}
       </Box>
     </ChakraProvider>

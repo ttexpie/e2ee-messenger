@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from "react";
 import React from "react";
 
-function ContactBar() {
+function ContactBar(props) {
     const [contactList, setContactList] = useState([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const finalRef = React.useRef();
@@ -28,7 +28,7 @@ function ContactBar() {
 
     const dynamicList = contactList.map((contact, index) => {
         return (
-            <HStack key={contact.key} align>
+            <HStack key={contact.key} onClick={() => props.setSelContact(contact.name)} align>
                 <Image 
                     src='http://cdn.onlinewebfonts.com/svg/img_173956.png' 
                     alt='avatar'
