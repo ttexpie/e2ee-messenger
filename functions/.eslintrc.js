@@ -1,4 +1,8 @@
 module.exports = {
+  parser: "@babel/eslint-parser",
+  parserOptions: {
+    requireConfigFile: false,
+  },
   root: true,
   env: {
     es6: true,
