@@ -22,13 +22,20 @@ function ContactBar(props) {
         const contactListRef = ref(database, 'users/' + auth.currentUser.uid + '/contacts');
 
         onChildAdded(contactListRef, (data) => {
+            console.log(data.key);
             addContact(data.key, data.val(), 'recent message goes here')
         });
     }, []);
 
     const dynamicList = contactList.map((contact, index) => {
         return (
-            <HStack key={contact.key} onClick={() => props.setSelContact(contact.name)} align>
+            <HStack 
+                key={contact.key} 
+                onClick={() => props.setSelContact(contact.name)} 
+                border='2px'
+                borderColor='gray.100'
+                bg={contact.name === props.selContact ? 'gray.100' : 'white'}
+                align='center'>
                 <Image 
                     src='http://cdn.onlinewebfonts.com/svg/img_173956.png' 
                     alt='avatar'
