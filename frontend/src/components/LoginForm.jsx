@@ -29,7 +29,6 @@ function LoginForm() {
     return (
         <Center>
             <VStack
-                w='30%'
                 minW='500px'
                 spacing={4}
                 padding='5'
