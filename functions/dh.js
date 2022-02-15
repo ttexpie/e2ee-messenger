@@ -32,3 +32,68 @@ const primes = {
         "generator": 2,
     },
 }
+
+class DiffieHellman {
+    constructor(group=14) {
+        this.prime = primes[group]["prime"];
+        if (this.prime == undefined) {
+            throw new Error("Group unsupported");
+        }
+        this.generator = primes[group]["generator"];
+
+        // Generate secure random number
+        let csprng = require("sodium").Random;
+        let bytes = csprng.randombytes_buf(32);
+        this.privateKey = ""; //TODO: find a hexlify function for JS that does equivalent to python hexlify
+    }
+
+    getPrivateKey() {
+        return this.privateKey;
+    }
+
+    generatePublicKey() {
+        let x = Math.pow(this.generator, this.privateKey) % this.prime;
+        //Need to return hex of x
+        return x.toString(16); //TODO: Is this the proper way to make a hex string?
+    }
+
+    isValidPublicKey(key) {
+        if (2 <= key && key <= this.prime - 2) {
+            let x = Math.floor((this.prime - 1) / 2);
+            if ((Math.pow(key, x) % this.prime) == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    generateSharedKey(otherKeyStr) {
+        let otherKey = parseInt(otherKeyStr, 16);
+        if (!this.isValidPublicKey(otherKey)) {
+            throw new Error("Invalid Public Key");
+        }
+        let sharedKey = Math.pow(otherKey, this.privateKey) % this.prime;
+        return SHA256(window.btoa(sharedKey)); //TODO: still need the python ".hexdigest()" equivalent for JS
+    }
+
+    static isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime) {
+        if (2 <= remotePublcKey && remotePublcKey <= prime - 2) {
+            let x = Math.floor((prime - 1) / 2);
+            if (Math.pow(remotePublcKey, x) % prime == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static generateSharedKeyStatic(localPrivateKeyStr, remotePublcKeyStr, group=14) {
+        let remotePublcKey = parseInt(remotePublcKeyStr, 16);
+        let localPrivateKey = parseInt(localPrivateKeyStr, 16);
+        let prime = primes[group]["prime"];
+        if (!this.isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime)) {
+            throw new Error("Invalid public key");
+        } 
+        let sharedKey = Math.pow(remotePublcKey, localPrivateKey) % prime;
+        return SHA256(window.btoa(sharedKey)); //TODO: still need the python ".hexdigest()" equivalent for JS
+    }
+}
