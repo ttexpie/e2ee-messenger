@@ -35,10 +35,22 @@ exports.makeUppercase = functions.firestore.document("/messages/{documentId}")
       return snap.ref.set({uppercase}, {merge: true});
     });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+exports.generateKeys() = functions.https.onRequest((req, res) => {
+    let dh = new DiffieHellman();
+    let privateKey = dh.getPrivateKey();
+    let publicKey = dh.generatePublicKey();
+
+    res.json({'privateKey': privateKey, 'publicKey': publicKey});
+});
+
+exports.generateSharedKey() = functions.https.onRequest((req, res) => {
+    let dh = new DiffieHellman();
+    try {
+      let localPrivateKey = req.query.localPrivateKey;
+      let remotePublcKey = req.query.remotePublcKey;
+      let sharedKey = dh.generateSharedKeyStatic(localPrivateKey, remotePublcKey);
+    } catch (error) {
+      return res.json({'message': 'Invalid public key.'});
+    }
+    return res.json({'shared key': sharedKey});
+});
