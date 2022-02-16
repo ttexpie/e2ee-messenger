@@ -1,4 +1,4 @@
-import { SHA256 } from "crypto-js";
+import * as crypto from "crypto-js";
 
 const primes = {
     //1536-bit
@@ -35,16 +35,13 @@ const primes = {
 
 class DiffieHellman {
     constructor(group=14) {
-        this.prime = primes[group]["prime"];
-        if (this.prime == undefined) {
-            throw new Error("Group unsupported");
+        this.prime = primes[group]["prime"]; //Get prime value
+        if (this.prime == undefined) { //Check if prime was retrieved, if not, invalid group
+            throw new Error("Group unsupported"); 
         }
-        this.generator = primes[group]["generator"];
-
-        // Generate secure random number
-        let csprng = require("sodium").Random;
-        let bytes = csprng.randombytes_buf(32);
-        this.privateKey = ""; //TODO: find a hexlify function for JS that does equivalent to python hexlify
+        this.generator = primes[group]["generator"]; //Get generator
+        let byteBuf = crypto.randomBytes(32); // Generate random 32-byte buffer array 
+        this.privateKey = byteBuf.toString('hex'); // Convert 32-byte buffer array to hex string
     }
 
     getPrivateKey() {
@@ -52,12 +49,12 @@ class DiffieHellman {
     }
 
     generatePublicKey() {
-        let x = Math.pow(this.generator, this.privateKey) % this.prime;
-        //Need to return hex of x
-        return x.toString(16); //TODO: Is this the proper way to make a hex string?
+        let x = Math.pow(this.generator, this.privateKey) % this.prime; // (gen ^ privateKey) % prime
+        return x.toString(16); // Convert x to hex string
     }
 
     isValidPublicKey(key) {
+        // Reverse calculate public key to check if valid
         if (2 <= key && key <= this.prime - 2) {
             let x = Math.floor((this.prime - 1) / 2);
             if ((Math.pow(key, x) % this.prime) == 1) {
@@ -68,15 +65,17 @@ class DiffieHellman {
     }
 
     generateSharedKey(otherKeyStr) {
-        let otherKey = parseInt(otherKeyStr, 16);
-        if (!this.isValidPublicKey(otherKey)) {
+        let otherKey = parseInt(otherKeyStr, 16); // Turn to hex value
+        if (!this.isValidPublicKey(otherKey)) { // Check if valid 
             throw new Error("Invalid Public Key");
         }
-        let sharedKey = Math.pow(otherKey, this.privateKey) % this.prime;
-        return SHA256(window.btoa(sharedKey)); //TODO: still need the python ".hexdigest()" equivalent for JS
+        let sharedKey = Math.pow(otherKey, this.privateKey) % this.prime; // Calculate shared key value
+        let encoded = window.btoa(sharedKey); // enconde the shared key
+        return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
     }
 
     static isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime) {
+        // Reverse calculate public key to check if valid
         if (2 <= remotePublcKey && remotePublcKey <= prime - 2) {
             let x = Math.floor((prime - 1) / 2);
             if (Math.pow(remotePublcKey, x) % prime == 1) {
@@ -87,13 +86,14 @@ class DiffieHellman {
     }
 
     static generateSharedKeyStatic(localPrivateKeyStr, remotePublcKeyStr, group=14) {
-        let remotePublcKey = parseInt(remotePublcKeyStr, 16);
-        let localPrivateKey = parseInt(localPrivateKeyStr, 16);
-        let prime = primes[group]["prime"];
-        if (!this.isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime)) {
+        let remotePublcKey = parseInt(remotePublcKeyStr, 16); // convert to hex value
+        let localPrivateKey = parseInt(localPrivateKeyStr, 16); // convert to hex value
+        let prime = primes[group]["prime"]; // Get prime
+        if (!this.isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime)) { // check if valid
             throw new Error("Invalid public key");
         } 
-        let sharedKey = Math.pow(remotePublcKey, localPrivateKey) % prime;
-        return SHA256(window.btoa(sharedKey)); //TODO: still need the python ".hexdigest()" equivalent for JS
+        let sharedKey = Math.pow(remotePublcKey, localPrivateKey) % prime; // calculate shared key value
+        let encoded = window.btoa(sharedKey); // encode shared key
+        return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
     }
 }
