@@ -1,3 +1,4 @@
+const dh = require("./dh.js");
 const functions = require("firebase-functions");
 
 const admin = require("firebase-admin");
@@ -35,7 +36,7 @@ exports.makeUppercase = functions.firestore.document("/messages/{documentId}")
       return snap.ref.set({uppercase}, {merge: true});
     });
 
-exports.generateKeys() = functions.https.onRequest((req, res) => {
+exports.generateKeys = functions.https.onRequest((req, res) => {
     let dh = new DiffieHellman();
     let privateKey = dh.getPrivateKey();
     let publicKey = dh.generatePublicKey();
@@ -43,7 +44,7 @@ exports.generateKeys() = functions.https.onRequest((req, res) => {
     res.json({'privateKey': privateKey, 'publicKey': publicKey});
 });
 
-exports.generateSharedKey() = functions.https.onRequest((req, res) => {
+exports.generateSharedKey = functions.https.onRequest((req, res) => {
     let dh = new DiffieHellman();
     try {
       let localPrivateKey = req.query.localPrivateKey;

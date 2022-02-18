@@ -1,4 +1,6 @@
-import * as crypto from "crypto-js";
+var cryptojs = require ("crypto-js");
+
+ 
 
 const primes = {
     //1536-bit
@@ -40,7 +42,7 @@ class DiffieHellman {
             throw new Error("Group unsupported"); 
         }
         this.generator = primes[group]["generator"]; //Get generator
-        let byteBuf = crypto.randomBytes(32); // Generate random 32-byte buffer array 
+        let byteBuf = cryptojs.lib.WordArray.random(32); // Generate random 32-byte buffer array 
         this.privateKey = byteBuf.toString('hex'); // Convert 32-byte buffer array to hex string
     }
 
