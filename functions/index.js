@@ -1,5 +1,5 @@
-const dh = require("./dh.js");
 const functions = require("firebase-functions");
+const DiffieHellman = require("./dh.js");
 
 const admin = require("firebase-admin");
 admin.initializeApp();

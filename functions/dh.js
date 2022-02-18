@@ -1,6 +1,4 @@
-var cryptojs = require ("crypto-js");
-
- 
+const cryptojs = require ("crypto-js");
 
 const primes = {
     //1536-bit
@@ -35,7 +33,7 @@ const primes = {
     },
 }
 
-class DiffieHellman {
+module.exports = class DiffieHellman {
     constructor(group=14) {
         this.prime = primes[group]["prime"]; //Get prime value
         if (this.prime == undefined) { //Check if prime was retrieved, if not, invalid group
@@ -43,7 +41,7 @@ class DiffieHellman {
         }
         this.generator = primes[group]["generator"]; //Get generator
         let byteBuf = cryptojs.lib.WordArray.random(32); // Generate random 32-byte buffer array 
-        this.privateKey = byteBuf.toString('hex'); // Convert 32-byte buffer array to hex string
+        this.privateKey = byteBuf.toString(cryptojs.enc.Hex); // Convert 32-byte buffer array to hex string
     }
 
     getPrivateKey() {
@@ -72,8 +70,9 @@ class DiffieHellman {
             throw new Error("Invalid Public Key");
         }
         let sharedKey = Math.pow(otherKey, this.privateKey) % this.prime; // Calculate shared key value
-        let encoded = window.btoa(sharedKey); // enconde the shared key
-        return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
+        return cryptojs.SHA256(sharedKey.toString()).toString(CryptoJS.enc.Hex)
+        //let encoded = window.btoa(sharedKey); // enconde the shared key
+        //return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
     }
 
     static isValidPublicKeyStatic(localPrivateKey, remotePublcKey, prime) {
@@ -95,7 +94,8 @@ class DiffieHellman {
             throw new Error("Invalid public key");
         } 
         let sharedKey = Math.pow(remotePublcKey, localPrivateKey) % prime; // calculate shared key value
-        let encoded = window.btoa(sharedKey); // encode shared key
-        return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
+        return cryptojs.SHA256(sharedKey.toString()).toString(CryptoJS.enc.Hex)
+        //let encoded = window.btoa(sharedKey); // encode shared key
+        //return crypto.hash.digest(encoded, 'hex'); // convert encoding to hex string
     }
 }
