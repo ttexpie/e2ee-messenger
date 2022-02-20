@@ -37,21 +37,54 @@ exports.makeUppercase = functions.firestore.document("/messages/{documentId}")
     });
 
 exports.generateKeys = functions.https.onRequest((req, res) => {
-    let dh = new DiffieHellman();
-    let privateKey = dh.getPrivateKey();
-    let publicKey = dh.generatePublicKey();
+  const dh = new DiffieHellman();
+  const privateKey = dh.getPrivateKey();
+  const publicKey = dh.generatePublicKey();
 
-    res.json({'privateKey': privateKey, 'publicKey': publicKey});
+  res.json({"privateKey": privateKey, "publicKey": publicKey});
 });
 
 exports.generateSharedKey = functions.https.onRequest((req, res) => {
-    let dh = new DiffieHellman();
-    try {
-      let localPrivateKey = req.query.localPrivateKey;
-      let remotePublcKey = req.query.remotePublcKey;
-      let sharedKey = dh.generateSharedKeyStatic(localPrivateKey, remotePublcKey);
-    } catch (error) {
-      return res.json({'message': 'Invalid public key.'});
-    }
-    return res.json({'shared key': sharedKey});
+  const dh = new DiffieHellman();
+  try {
+    const localPrivateKey = req.query.private;
+    const remotePublcKey = req.query.public;
+    const sharedKey = dh.generateSharedKeyStatic(localPrivateKey,
+        remotePublcKey);
+    return res.json({"shared key": sharedKey});
+  } catch (error) {
+    return res.json({"message": "Invalid public key."});
+  }
+});
+
+exports.testKeyExchange = functions.https.onRequest((req, res) => {
+  const user1 = new DiffieHellman();
+  const user2 = new DiffieHellman();
+
+  const private1 = user1.getPrivateKey();
+  const public1 = user1.generatePublicKey();
+
+  const private2 = user2.getPrivateKey();
+  const public2 = user2.generatePublicKey();
+
+  const shared1 = user1.generateSharedKey(public2);
+  const shared2 = user2.generateSharedKey(public1);
+
+  const ifEqual = shared1 == shared2;
+
+  return res.json(
+      {
+        "user1": {
+          "private": private1,
+          "public": public1,
+          "shared": shared1,
+        },
+        "user2": {
+          "private": private2,
+          "public": public2,
+          "shared": shared2,
+        },
+        "equal": ifEqual,
+      }
+  );
 });
