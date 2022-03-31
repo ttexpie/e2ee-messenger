@@ -1,6 +1,6 @@
 import { Box, Button, Heading, HStack, Image, Text, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, 
     ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
+import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from "react";
 import React from "react";
@@ -18,13 +18,13 @@ function ContactBar(props) {
         const addContact = (k, n, r) => {
             setContactList(contactList => [...contactList, {key: k, name: n, recent: r}]);
         }
-    
+
         const getContacts = async () => {
-            const q = query(collection(db, "users"), where("email", "!=", auth.currentUser.email));
+            const q = query(collection(db, "users/" + auth.currentUser.uid + "/chats"));
             const snap = await getDocs(q);
             snap.forEach((doc) => {
                 console.log(doc.id);
-                addContact(doc.id, doc.get("email"), 'recent message goes here');
+                addContact(doc.id, doc.get("name"), "recent message goes here");
             });
         }
 

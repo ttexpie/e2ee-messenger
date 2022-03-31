@@ -1,8 +1,10 @@
 import { getAuth, signOut } from 'firebase/auth';
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, Spacer } from '@chakra-ui/react';
 import ContactBar from './ContactBar';
 import React, { useState } from 'react';
 import Chat from './Chat';
+import ChatLog from './ChatLog';
+import ChatInput from './ChatInput';
 
 function ChatView() {
     const [selContact, setSelContact] = useState('');
@@ -21,7 +23,13 @@ function ChatView() {
                 <ContactBar selContact={selContact} setSelContact={setSelContact} />
             </Box>
 
-            <Chat selContact={selContact} setSelContact={setSelContact} />
+            <Flex 
+                w='65%'
+                flexDirection='column'
+            >
+                <ChatLog />
+                <ChatInput />
+            </Flex>
         </Flex>
     );
 }
