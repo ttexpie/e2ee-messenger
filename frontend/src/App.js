@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ChatView from './components/ChatView';
 import LoginForm from './components/LoginForm';
 import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 
-console.log(process.env);
+console.log(process.env.REACT_APP_FIREBASE_KEY);
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -19,28 +20,31 @@ const firebaseConfig = {
   measurementId: "G-J3XXW8NNMC"
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
-const url = 'http://localhost:4000/';
+const db = getFirestore(app);
 
 function App() {
-  //const [test, setTest] = useState('');
   const [user] = useAuthState(auth);
 
-  /*
-  const callAPI = () => {
-    fetch(url + 'test')
-      .then(res => res.text())
-      .then(res => setTest(res))
-      .catch(err => err);
-  }
-
   useEffect(() => {
-    callAPI();
-    console.log(test);
-  }, []);
-  */
+    async function checkUser(uid, email) {
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (!userDoc.exists()) {
+        console.log("user document doesn't exist, creating one");
+        await setDoc(doc(db, "users", uid), {
+          email: email
+        });
+      }
+      else {
+        console.log("user document exists, logging in...")
+      }
+    }
+
+    if (user != null) {
+      checkUser(user.uid, user.email);
+    }
+  }, [user]);
 
   return (
     <ChakraProvider>

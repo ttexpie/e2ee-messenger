@@ -1,9 +1,10 @@
 import { Box, Button, Heading, HStack, Image, Text, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, 
     ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import { getDatabase, onChildAdded, ref } from 'firebase/database';
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from "react";
 import React from "react";
+import { app } from "../App";
 
 function ContactBar(props) {
     const [contactList, setContactList] = useState([]);
@@ -12,19 +13,22 @@ function ContactBar(props) {
 
     useEffect(() => {
         const auth = getAuth();
-        const database = getDatabase();
-        
+        const db = getFirestore(app);
+
         const addContact = (k, n, r) => {
             setContactList(contactList => [...contactList, {key: k, name: n, recent: r}]);
         }
     
-        console.log('users/' + auth.currentUser.uid + '/contacts');
-        const contactListRef = ref(database, 'users/' + auth.currentUser.uid + '/contacts');
+        const getContacts = async () => {
+            const q = query(collection(db, "users"), where("email", "!=", auth.currentUser.email));
+            const snap = await getDocs(q);
+            snap.forEach((doc) => {
+                console.log(doc.id);
+                addContact(doc.id, doc.get("email"), 'recent message goes here');
+            });
+        }
 
-        onChildAdded(contactListRef, (data) => {
-            console.log(data.key);
-            addContact(data.key, data.val(), 'recent message goes here')
-        });
+        getContacts();
     }, []);
 
     const dynamicList = contactList.map((contact, index) => {
