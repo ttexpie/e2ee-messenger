@@ -35,10 +35,10 @@ function ContactBar(props) {
         return (
             <HStack 
                 key={contact.key} 
-                onClick={() => props.setSelContact(contact.name)} 
+                onClick={() => props.setSelContact(contact.key)} 
                 border='2px'
                 borderColor='gray.100'
-                bg={contact.name === props.selContact ? 'gray.100' : 'white'}
+                bg={contact.key === props.selContact ? 'gray.100' : 'white'}
                 align='center'>
                 <Image 
                     src='http://cdn.onlinewebfonts.com/svg/img_173956.png' 

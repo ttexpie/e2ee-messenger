@@ -7,10 +7,11 @@ import ChatView from './components/ChatView';
 import LoginForm from './components/LoginForm';
 import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 
-console.log(process.env.REACT_APP_FIREBASE_KEY);
+const { REACT_APP_FIREBASE_KEY } = process.env;
+console.log(process.env);
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  apiKey: REACT_APP_FIREBASE_KEY,
   authDomain: "e2ee-messenger-8ac87.firebaseapp.com",
   databaseURL: "https://e2ee-messenger-8ac87-default-rtdb.firebaseio.com",
   projectId: "e2ee-messenger-8ac87",
