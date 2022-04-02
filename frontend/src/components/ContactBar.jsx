@@ -1,20 +1,25 @@
-import { Box, Button, Heading, HStack, Image, Text, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, 
-    ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import { collection, getDocs, getFirestore, query } from "firebase/firestore";
-import { getAuth } from 'firebase/auth';
-import { useEffect, useState } from "react";
-import React from "react";
+import {
+    Box, Button, FormControl, FormLabel, Heading, HStack, Image, Input, Modal, ModalBody, ModalCloseButton,
+    ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure
+} from "@chakra-ui/react";
+import { getAuth, signOut } from 'firebase/auth';
+import { collection, getDocs, getFirestore, orderBy, query } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { app } from "../App";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 function ContactBar(props) {
     const [contactList, setContactList] = useState([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const finalRef = React.useRef();
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const contactRef = collection(db, "users/" + auth.currentUser.uid + "/chats");
+    const q = query(contactRef);
+    const [contacts] = useCollectionData(q);
 
     useEffect(() => {
-        const auth = getAuth();
-        const db = getFirestore(app);
-
         const addContact = (k, n, r) => {
             setContactList(contactList => [...contactList, {key: k, name: n, recent: r}]);
         }
@@ -29,7 +34,7 @@ function ContactBar(props) {
         }
 
         getContacts();
-    }, []);
+    }, [auth, db]);
 
     const dynamicList = contactList.map((contact, index) => {
         return (
@@ -56,6 +61,7 @@ function ContactBar(props) {
 
     return (
         <Box>
+            <Button onClick={() => signOut(auth)}>Sign Out</Button>
             <Button onClick={onOpen}>New Contact</Button>
             <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />

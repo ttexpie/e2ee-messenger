@@ -1,9 +1,9 @@
-import { Box, Button, Flex, FormControl, Input, InputGroup, Text } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
-import { addDoc, collection, doc, getFirestore, limit, orderBy, query, serverTimestamp } from 'firebase/firestore';
-import { app } from '../App';
+import { Box, Button, Container, Flex, Input, InputGroup, Text } from '@chakra-ui/react';
 import { getAuth } from 'firebase/auth';
+import { addDoc, collection, getFirestore, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { app } from '../App';
 
 const ChatLog = (props) => {
     const [formValue, setFormValue] = useState("");
@@ -13,7 +13,7 @@ const ChatLog = (props) => {
     const dummy = useRef();
     const messageRef = collection(db, "chats/" + props.selContact + "/messages");
     console.log(messageRef.path);
-    const q = query(messageRef, orderBy("time"), limit(25));
+    const q = query(messageRef, orderBy("time"));
 
     const [messages] = useCollectionData(q);
     console.log(messages);
@@ -23,16 +23,35 @@ const ChatLog = (props) => {
 
         if (auth.currentUser.uid === user) {
             return (
-                <Box>
-                    <Text>{message}</Text>
-                </Box>
+                <Flex justify='end' p='1'>
+                    <Text
+                        border='1px'
+                        borderRadius='3xl'
+                        borderColor='blue.500'
+                        bg='blue.500'
+                        p='2' 
+                        color='white'
+                        maxW='container.md'
+                    >
+                        {message}
+                    </Text>
+                </Flex>
             );
         }
         else {
             return (
-                <Box>
-                    <Text>{message}</Text>
-                </Box>
+                <Flex p='1'>
+                    <Text
+                        border='1px'
+                        borderRadius='3xl'
+                        borderColor='gray.100'
+                        bg='gray.100'
+                        p='2'
+                        maxW='container.md'
+                    >
+                        {message}
+                    </Text>
+                </Flex>
             )
         }
     }
@@ -58,6 +77,8 @@ const ChatLog = (props) => {
                 border='2px' 
                 borderRadius='2xl'
                 borderColor='gray.100'
+                overflowY='auto'
+                p='2'
             >
                 {messages && messages.map((msg, index) => <Message key={index} message={msg} />)}
 
@@ -69,21 +90,25 @@ const ChatLog = (props) => {
                 borderRadius='2xl'
                 borderColor='gray.100'
             >
-                <InputGroup >  
-                    <Input 
-                        value={formValue} 
-                        onChange={(e) => setFormValue(e.target.value)}
-                        placeholder='type message here'
-                    />
-                    <Button
-                        colorScheme='blue'
-                        disabled={!formValue}
-                        type='submit'
-                        onSubmit={sendMessage}
-                    >
-                        Send
-                    </Button>
-                </InputGroup>
+                <form
+                    onSubmit={sendMessage}
+                >
+                    <InputGroup>
+                        <Input
+                            value={formValue}
+                            onChange={(e) => setFormValue(e.target.value)}
+                            placeholder='type message here'
+                            type='text'
+                        />
+                        <Button
+                            type='submit'
+                            colorScheme='blue'
+                            disabled={!formValue}
+                        >
+                            Send
+                        </Button>
+                    </InputGroup>
+                </form>
             </Box>
         </>
     );

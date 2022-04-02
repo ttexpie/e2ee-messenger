@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import React, { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ChatView from './components/ChatView';
 import LoginForm from './components/LoginForm';
-import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 
 const { REACT_APP_FIREBASE_KEY } = process.env;
 console.log(process.env);
@@ -50,7 +50,7 @@ function App() {
   return (
     <ChakraProvider>
       <Center h='5vh'>
-        <Heading>StudyFind Messenger</Heading>
+        <Heading size='lg'>StudyFind Messenger</Heading>
       </Center>
       <Box direction='column'>
         {user ? <ChatView /> : <LoginForm />}
