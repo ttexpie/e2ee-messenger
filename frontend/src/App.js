@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import React, { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ChatView from './components/ChatView';
 import LoginForm from './components/LoginForm';
-import { Box, Center, ChakraProvider, Heading } from '@chakra-ui/react';
 
+const { REACT_APP_FIREBASE_KEY } = process.env;
 console.log(process.env);
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  apiKey: REACT_APP_FIREBASE_KEY,
   authDomain: "e2ee-messenger-8ac87.firebaseapp.com",
   databaseURL: "https://e2ee-messenger-8ac87-default-rtdb.firebaseio.com",
   projectId: "e2ee-messenger-8ac87",
@@ -19,33 +21,36 @@ const firebaseConfig = {
   measurementId: "G-J3XXW8NNMC"
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
-const url = 'http://localhost:4000/';
+const db = getFirestore(app);
 
 function App() {
-  //const [test, setTest] = useState('');
   const [user] = useAuthState(auth);
 
-  /*
-  const callAPI = () => {
-    fetch(url + 'test')
-      .then(res => res.text())
-      .then(res => setTest(res))
-      .catch(err => err);
-  }
-
   useEffect(() => {
-    callAPI();
-    console.log(test);
-  }, []);
-  */
+    async function checkUser(uid, email) {
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (!userDoc.exists()) {
+        console.log("user document doesn't exist, creating one");
+        await setDoc(doc(db, "users", uid), {
+          email: email
+        });
+      }
+      else {
+        console.log("user document exists, logging in...")
+      }
+    }
+
+    if (user != null) {
+      checkUser(user.uid, user.email);
+    }
+  }, [user]);
 
   return (
     <ChakraProvider>
       <Center h='5vh'>
-        <Heading>StudyFind Messenger</Heading>
+        <Heading size='lg'>StudyFind Messenger</Heading>
       </Center>
       <Box direction='column'>
         {user ? <ChatView /> : <LoginForm />}

@@ -1,40 +1,49 @@
-import { Box, Button, Heading, HStack, Image, Text, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, 
-    ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import { getDatabase, onChildAdded, ref } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
-import { useEffect, useState } from "react";
-import React from "react";
+import {
+    Box, Button, FormControl, FormLabel, Heading, HStack, Image, Input, Modal, ModalBody, ModalCloseButton,
+    ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure
+} from "@chakra-ui/react";
+import { getAuth, signOut } from 'firebase/auth';
+import { collection, getDocs, getFirestore, orderBy, query } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { app } from "../App";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 function ContactBar(props) {
     const [contactList, setContactList] = useState([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const finalRef = React.useRef();
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const contactRef = collection(db, "users/" + auth.currentUser.uid + "/chats");
+    const q = query(contactRef);
+    const [contacts] = useCollectionData(q);
 
     useEffect(() => {
-        const auth = getAuth();
-        const database = getDatabase();
-        
         const addContact = (k, n, r) => {
             setContactList(contactList => [...contactList, {key: k, name: n, recent: r}]);
         }
-    
-        console.log('users/' + auth.currentUser.uid + '/contacts');
-        const contactListRef = ref(database, 'users/' + auth.currentUser.uid + '/contacts');
 
-        onChildAdded(contactListRef, (data) => {
-            console.log(data.key);
-            addContact(data.key, data.val(), 'recent message goes here')
-        });
-    }, []);
+        const getContacts = async () => {
+            const q = query(collection(db, "users/" + auth.currentUser.uid + "/chats"));
+            const snap = await getDocs(q);
+            snap.forEach((doc) => {
+                console.log(doc.id);
+                addContact(doc.id, doc.get("name"), "recent message goes here");
+            });
+        }
+
+        getContacts();
+    }, [auth, db]);
 
     const dynamicList = contactList.map((contact, index) => {
         return (
             <HStack 
                 key={contact.key} 
-                onClick={() => props.setSelContact(contact.name)} 
+                onClick={() => props.setSelContact(contact.key)} 
                 border='2px'
                 borderColor='gray.100'
-                bg={contact.name === props.selContact ? 'gray.100' : 'white'}
+                bg={contact.key === props.selContact ? 'gray.100' : 'white'}
                 align='center'>
                 <Image 
                     src='http://cdn.onlinewebfonts.com/svg/img_173956.png' 
@@ -52,6 +61,7 @@ function ContactBar(props) {
 
     return (
         <Box>
+            <Button onClick={() => signOut(auth)}>Sign Out</Button>
             <Button onClick={onOpen}>New Contact</Button>
             <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />

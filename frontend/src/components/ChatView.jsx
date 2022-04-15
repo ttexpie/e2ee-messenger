@@ -1,13 +1,10 @@
-import { getAuth, signOut } from 'firebase/auth';
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import ContactBar from './ContactBar';
 import React, { useState } from 'react';
-import Chat from './Chat';
+import ChatLog from './ChatLog';
 
 function ChatView() {
-    const [selContact, setSelContact] = useState('');
-
-    const auth = getAuth();
+    const [selContact, setSelContact] = useState("");
 
     return (
         <Flex h='95vh'>
@@ -17,11 +14,14 @@ function ChatView() {
                 borderRadius='2xl'
                 borderColor='gray.100'
             >
-                <Button onClick={() => signOut(auth)}>Sign Out</Button>
                 <ContactBar selContact={selContact} setSelContact={setSelContact} />
             </Box>
 
-            <Chat selContact={selContact} setSelContact={setSelContact} />
+            <Box 
+                w='65%'
+            >
+                {selContact ? <ChatLog selContact={selContact} /> : <Text>Select a conversation</Text> }
+            </Box>
         </Flex>
     );
 }
