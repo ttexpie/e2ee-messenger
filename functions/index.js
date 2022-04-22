@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const DiffieHellman = require("./dh.js");
 
 const admin = require("firebase-admin");
+const cors = require("cors")({origin: true});
 admin.initializeApp();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into
@@ -37,11 +38,13 @@ exports.makeUppercase = functions.firestore.document("/messages/{documentId}")
     });
 
 exports.generateKeys = functions.https.onRequest((req, res) => {
-  const dh = new DiffieHellman();
-  const privateKey = dh.getPrivateKey();
-  const publicKey = dh.generatePublicKey();
+  cors(req, res, () => {
+    const dh = new DiffieHellman();
+    const privateKey = dh.getPrivateKey();
+    const publicKey = dh.generatePublicKey();
 
-  res.json({"privateKey": privateKey, "publicKey": publicKey});
+    res.json({"privateKey": privateKey, "publicKey": publicKey});
+  });
 });
 
 exports.generateSharedKey = functions.https.onRequest((req, res) => {
