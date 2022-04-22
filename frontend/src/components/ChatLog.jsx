@@ -73,7 +73,7 @@ const ChatLog = (props) => {
     return (
         <>
             <Box
-                h='95%'
+                h='89vh'
                 border='2px' 
                 borderRadius='2xl'
                 borderColor='gray.100'
@@ -84,12 +84,7 @@ const ChatLog = (props) => {
 
                 <span ref={dummy}></span>
             </Box>
-            <Box
-                h='5%'
-                border='2px' 
-                borderRadius='2xl'
-                borderColor='gray.100'
-            >
+            <Box>
                 <form
                     onSubmit={sendMessage}
                 >
