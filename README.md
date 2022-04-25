@@ -14,12 +14,13 @@ https://us-central1-e2ee-messenger-8ac87.cloudfunctions.net/testKeyExchange
 
 ##Release Notes - April 15, 2022:
 ###New and Improved
-1. Added new contacts
+1. Can add new contacts
 2. Added more chat elements
-    1. Chat input
-    2. Chat log
-    3. Chat view
-    4. Chat bar
+    2. Adding messages
+    3. Selecting contact
+    4. Contact bar
+###Issues
+1. Encryption not fully implemented in frontend
 ###Fixes
 1. Fixed NaN issue with encryption
 
