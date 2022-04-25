@@ -1,6 +1,6 @@
-import { Box, Button, Container, Flex, Input, InputGroup, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Input, InputGroup, Text } from '@chakra-ui/react';
 import { getAuth } from 'firebase/auth';
-import { addDoc, collection, getFirestore, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getFirestore, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { app } from '../App';
@@ -17,6 +17,13 @@ const ChatLog = (props) => {
 
     const [messages] = useCollectionData(q);
     console.log(messages);
+
+    const getKeys = (contact) => {
+        let publicKey;
+        const keyRef = doc(db, "users/" + contact);
+        getDoc(keyRef).then((data) => { publicKey = data.get("publicKey")});
+        return publicKey;
+    }
 
     const Message = (props) => {
         const {message, user} = props.message;
