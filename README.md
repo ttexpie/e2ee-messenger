@@ -1,21 +1,13 @@
 # End-to-End Encrypted Messenger
 
-E2EE Messenger that uses React with Firebase/Express server backend. 
+This is the end-to-end encrypted messenger that implements the Diffie Hellman algorithm. This repository includes an example of frontend UI
+and the main firebase cloud functions tools to perform the key exchange.
 
-How to install on local machine:
-
+Installation:
 1. Clone Repository
-2. Navigate to directory
-3. `cd backend` and either run `npm install` or `yarn install`
-4. `cd ../frontend` and either run `npm install` or `yarn install`
+2. `npm install` in both `/functions` and `/frontend`
+3. Make sure if using frontend web server to put firebase key in `.env` file
 
-How to run website playground:
-
-1. Open two terminals and navigate to directory
-2. On one terminal, `cd backend` and either run `npm start` or `yarn start`. Can access server using `http://localhost:4000`.
-3. On the other terminal `cd frontend` and either run `npm start` or `yarn start`. Everything should be working!
-
-How to run firebase emulator:  https://firebase.google.com/docs/functions/local-emulator 
-1. `cd functions`
-2. `npm install -g firebase-tools`
-3. `firebase emulators:start`
+You can do quick testing for the cloud functions using these links:
+https://us-central1-e2ee-messenger-8ac87.cloudfunctions.net/generateKeys
+https://us-central1-e2ee-messenger-8ac87.cloudfunctions.net/testKeyExchange
